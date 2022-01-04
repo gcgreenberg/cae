@@ -3,14 +3,8 @@ import string
 import os
 import numpy as np
 import shutil
-
-def init_out_dir(out_dir):
-#     out_dir = os.path.join('/home/gcgreen2/neurips_comp/out', date.today().strftime("%m-%d") + '-' \
-#         ''.join(np.random.choice(list(string.ascii_lowercase), size=3, replace=True)))
-    os.makedirs(out_dir, exist_ok=True)
-    shutil.copyfile('/home/gcgreen2/neurips_comp/cae/config.py', os.path.join(out_dir,'config.py'))
-
-model_str = lambda par: 'models.' + par['model'] + '()'
+    
+model_str = lambda par: 'models.' + par['model'] + '(**par)'
 
 def log(logfile, text, newline=False):
     start = '\n' if newline else ''
@@ -24,10 +18,11 @@ def logheader(logfile, par):
         n_pcs: {}
         batch size: {}
         learning rate: {}
-        lambda_mod2: {}
-        lambda_latent: {}
-==============================================================\n""".format(
-            par['out_dir'], par['n_pcs'], par['batch'], par['lr'], par['lambda_mod2'], par['lambda_latent']))
+        \u03bb mod1: {}
+        \u03bb mod2: {}
+        \u03bb latent: {}
+        \u03bb regularization: {}
+==============================================================\n""".format(par['out_dir'], par['n_pcs'], par['batch'], par['lr'], par['lambda_mod1'], par['lambda_mod2'], par['lambda_latent'], par['lambda_reg']))
     
 def print_epoch(epoch):
     return epoch<=5 or epoch%20==0

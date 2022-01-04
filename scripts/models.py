@@ -53,7 +53,7 @@ class Decoder(nn.Module):
         return self.decoder(x)
     
 class CAE(nn.Module):
-    def __init__(self, in_dim=par['in_dim'], h1_dim=par['h1_dim'], h2_dim=par['h2_dim'], z_dim=par['z_dim']):
+    def __init__(self, in_dim, h1_dim, h2_dim, z_dim, **args):
         super(CAE, self).__init__()
         self.enc_mod1 = Encoder(in_dim, h1_dim, h2_dim, z_dim)
         self.dec_mod1 = Decoder(z_dim, h2_dim, h1_dim, in_dim)
@@ -74,25 +74,25 @@ class CAE(nn.Module):
         return mod1_recon, mod2_recon, z_mod1, z_mod2
     
 class CAE_avg(CAE):
-    def __init__(self, in_dim=par['in_dim'], h1_dim=par['h1_dim'], h2_dim=par['h2_dim'], z_dim=par['z_dim']):
+    def __init__(self, in_dim, h1_dim, h2_dim, z_dim, **args):
         super(CAE_avg, self).__init__(in_dim=in_dim, h1_dim=h1_dim, h2_dim=h2_dim, z_dim=z_dim)
     
     def forward(self, mod1, mod2):
-        z_mod1 = reparam(self.enc_mod1(mod1))
-        z_mod2 = reparam(self.enc_mod2(mod2))
+        z_mod1 = self.reparam(*self.enc_mod1(mod1))
+        z_mod2 = self.reparam(*self.enc_mod2(mod2))
         z = 1/2 * (z_mod1+z_mod2)
         mod2_recon = self.dec_mod2(z)
         mod1_recon = self.dec_mod1(z)
         return mod1_recon, mod2_recon, z_mod1, z_mod2
     
 class CAE_linear_comb(CAE):
-    def __init__(self, in_dim=par['in_dim'], h1_dim=par['h1_dim'], h2_dim=par['h2_dim'], z_dim=par['z_dim']):
+    def __init__(self, in_dim, h1_dim, h2_dim, z_dim, **args):
         super(CAE_linear_comb, self).__init__(in_dim=in_dim, h1_dim=h1_dim, h2_dim=h2_dim, z_dim=z_dim)
         self.linear_comb = nn.Linear(2*z_dim, z_dim)
     
     def forward(self, mod1, mod2):
-        z_mod1 = reparam(self.enc_mod1(mod1))
-        z_mod2 = reparam(self.enc_mod2(mod2))
+        z_mod1 = self.reparam(*self.enc_mod1(mod1))
+        z_mod2 = self.reparam(*self.enc_mod2(mod2))
         z_concat = torch.cat(z_mod1, z_mod2, 1) # concat the features dimension (-> # cells x 2*z_dim)
         z = self.linear_comb(z_concat)
         mod2_recon = self.dec_mod2(z)
