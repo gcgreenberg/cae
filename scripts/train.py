@@ -34,7 +34,7 @@ def train(config):
     # Init model, etc
     model = eval(utils.model_str(par))
     model.load_state_dict(torch.load(files['model']))
-    optimizer = torch.optim.Adam(model.parameters(), lr=par['lr'])
+    optimizer = torch.optim.Adam(model.parameters(), lr=par['lr'], weight_decay=1e-4)
     smth_loss = nn.SmoothL1Loss()
     mse_loss = nn.MSELoss()
 

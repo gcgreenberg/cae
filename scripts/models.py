@@ -32,7 +32,9 @@ class Encoder(nn.Module):
     def __init__(self, in_dim, h1_dim, h2_dim, z_dim):
         super(Encoder, self).__init__()
         self.encoder = nn.Sequential(
+            nn.Dropout(0.1),
             Layer(in_dim, h1_dim),
+            nn.Dropout(0.1),
             Layer(h1_dim, h2_dim))
         self.mu = nn.Linear(h2_dim, z_dim)
         self.logvar = nn.Linear(h2_dim, z_dim)
@@ -46,11 +48,36 @@ class Decoder(nn.Module):
         super(Decoder, self).__init__()
         self.decoder = nn.Sequential(
             Layer(z_dim, h2_dim),
+            nn.Dropout(0.1),
             Layer(h2_dim, h1_dim),
             nn.Linear(h1_dim,out_dim))
 
     def forward(self, x):
         return self.decoder(x)
+
+# class Encoder(nn.Module):
+#     def __init__(self, in_dim, h1_dim, h2_dim, z_dim):
+#         super(Encoder, self).__init__()
+#         self.encoder = nn.Sequential(
+#             Layer(in_dim, h1_dim),
+#             Layer(h1_dim, h2_dim))
+#         self.mu = nn.Linear(h2_dim, z_dim)
+#         self.logvar = nn.Linear(h2_dim, z_dim)
+
+#     def forward(self, x):
+#         x = self.encoder(x)
+#         return self.mu(x), self.logvar(x)
+
+# class Decoder(nn.Module):
+#     def __init__(self, z_dim, h2_dim, h1_dim, out_dim):
+#         super(Decoder, self).__init__()
+#         self.decoder = nn.Sequential(
+#             Layer(z_dim, h2_dim),
+#             Layer(h2_dim, h1_dim),
+#             nn.Linear(h1_dim,out_dim))
+
+#     def forward(self, x):
+#         return self.decoder(x)
     
 class CAE(nn.Module):
     def __init__(self, in_dim, h1_dim, h2_dim, z_dim, **args):
