@@ -93,24 +93,31 @@ class CAE(nn.Module):
         return eps * std + mu
     
     def forward(self, mod1, mod2):
-        z_mod1 = self.reparam(*self.enc_mod1(mod1))
-        z_mod2 = self.reparam(*self.enc_mod2(mod2))
+        mu_mod1, logvar_mod1 = self.enc_mod1(mod1)
+        z_mod1 = self.reparam(mu_mod1, logvar_mod1)
+        
+        mu_mod2, logvar_mod2 = self.enc_mod2(mod2)
+        z_mod2 = self.reparam(mu_mod2, logvar_mod2)
         
         mod2_recon = self.dec_mod2(z_mod1)
         mod1_recon = self.dec_mod1(z_mod2)
-        return mod1_recon, mod2_recon, z_mod1, z_mod2
+        return mod1_recon, mod2_recon, mu_mod1, logvar_mod1, mu_mod2, logvar_mod2, z_mod1, z_mod2
     
 class CAE_avg(CAE):
     def __init__(self, in_dim, h1_dim, h2_dim, z_dim, **args):
         super(CAE_avg, self).__init__(in_dim=in_dim, h1_dim=h1_dim, h2_dim=h2_dim, z_dim=z_dim)
     
     def forward(self, mod1, mod2):
-        z_mod1 = self.reparam(*self.enc_mod1(mod1))
-        z_mod2 = self.reparam(*self.enc_mod2(mod2))
+        mu_mod1, logvar_mod1 = self.enc_mod1(mod1)
+        z_mod1 = self.reparam(mu_mod1, logvar_mod1)
+        
+        mu_mod2, logvar_mod2 = self.enc_mod2(mod2)
+        z_mod2 = self.reparam(mu_mod2, logvar_mod2)
+        
         z = 1/2 * (z_mod1+z_mod2)
         mod2_recon = self.dec_mod2(z)
         mod1_recon = self.dec_mod1(z)
-        return mod1_recon, mod2_recon, z_mod1, z_mod2
+        return mod1_recon, mod2_recon, mu_mod1, logvar_mod1, mu_mod2, logvar_mod2, z_mod1, z_mod2
     
 class CAE_linear_comb(CAE):
     def __init__(self, in_dim, h1_dim, h2_dim, z_dim, **args):
@@ -118,11 +125,15 @@ class CAE_linear_comb(CAE):
         self.linear_comb = nn.Linear(2*z_dim, z_dim)
     
     def forward(self, mod1, mod2):
-        z_mod1 = self.reparam(*self.enc_mod1(mod1))
-        z_mod2 = self.reparam(*self.enc_mod2(mod2))
-        z_concat = torch.cat(z_mod1, z_mod2, 1) # concat the features dimension (-> # cells x 2*z_dim)
+        mu_mod1, logvar_mod1 = self.enc_mod1(mod1)
+        z_mod1 = self.reparam(mu_mod1, logvar_mod1)
+        
+        mu_mod2, logvar_mod2 = self.enc_mod2(mod2)
+        z_mod2 = self.reparam(mu_mod2, logvar_mod2)
+        
+        z_concat = torch.cat((z_mod1, z_mod2), 1) # concat the features dimension (-> # cells x 2*z_dim)
         z = self.linear_comb(z_concat)
         mod2_recon = self.dec_mod2(z)
         mod1_recon = self.dec_mod1(z)
-        return mod1_recon, mod2_recon, z_mod1, z_mod2
+        return mod1_recon, mod2_recon, mu_mod1, logvar_mod1, mu_mod2, logvar_mod2, z_mod1, z_mod2
     

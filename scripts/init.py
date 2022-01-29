@@ -52,12 +52,12 @@ def init(config):
         utils.log(LOG, 'mod2 PCA already exists. skipping computation')
 
 
-    # Split test and train data
-    assert len(X) == len(Y)
-    idx_train, idx_test = train_test_split(range(len(X)), train_size=par['pct_train'])
-    np.savetxt(files['idx_train'], idx_train, fmt='%d')
-    np.savetxt(files['idx_test'], idx_test, fmt='%d')
-    utils.log(LOG, 'split data into test and train and stored indices')
+    # Split test and train data ##### skipping. for now train on full dataset
+#     assert len(X) == len(Y)
+#     idx_train, idx_test = train_test_split(range(len(X)), train_size=par['pct_train'])
+#     np.savetxt(files['idx_train'], idx_train, fmt='%d')
+#     np.savetxt(files['idx_test'], idx_test, fmt='%d')
+#     utils.log(LOG, 'split data into test and train and stored indices')
 
     # Init model, etc
     model = eval(utils.model_str(par))
