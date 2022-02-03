@@ -40,7 +40,8 @@ def train(config):
     optimizer = torch.optim.Adam(model.parameters(), lr=par['lr'], weight_decay=1e-4)
     smth_loss = nn.SmoothL1Loss()
     mse_loss = nn.MSELoss()
-    kl_loss = lambda mu, logvar: 1/2 * torch.mean(mu**2 + logvar.exp() - 1 - logvar)
+    kl_loss = lambda mu, logvar: torch.mean(-0.5 * torch.sum(1 + logvar - mu ** 2 - logvar.exp(), dim = 1), dim = 0)
+    #1/2 * torch.mean(mu**2 + logvar.exp() - 1 - logvar)
 
 
     def calc_errors(X, Y):

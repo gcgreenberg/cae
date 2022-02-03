@@ -21,6 +21,7 @@ def init(config):
     # Init output dir
     os.makedirs(par['out_dir'], exist_ok=True)
     shutil.copyfile(files['config'], files['config_cp'])
+    shutil.copyfile(files['eval_nb'], files['eval_cp'])
     
     # Init logfile
     LOG = files['log']
