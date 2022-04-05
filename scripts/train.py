@@ -12,7 +12,7 @@ from sklearn.decomposition import TruncatedSVD
 sys.path.append('/home/gcgreen2/neurips_comp/cae')
 from scripts import models, utils
 
-device = torch.device('cpu')
+device = torch.device('cuda')
 
 def train(config):
     par = config.par
@@ -50,7 +50,7 @@ def train(config):
         error_Y = par['lambda_mod2'] * smth_loss(Y_recon, Y)
         error_Z = par['lambda_latent'] * mse_loss(Z_mod1, Z_mod2) # if par['model']=='CAE' else torch.zeros_like(error_X)
         KL = par['lambda_kl'] * (kl_loss(Mu_mod1, Logvar_mod1) + kl_loss(Mu_mod2, Logvar_mod2))
-        reg_Z = par['lambda_reg'] * (torch.mean(torch.square(Z_mod1)) + torch.mean(torch.square(Z_mod2)))
+        reg_Z = par['lambda_reg'] * (torch.mean(torch.pow(Z_mod1,2)) + torch.mean(torch.pow(Z_mod2,2)))
         return error_X, error_Y, error_Z, KL, reg_Z
 
     # Training

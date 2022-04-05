@@ -2,7 +2,7 @@ from os.path import join
 
 PROJ_DIR = '/home/gcgreen2/neurips_comp'
 DATA_DIR = join(PROJ_DIR, 'data', 'multiome')
-OUT_DIR = join(PROJ_DIR, 'out', '2-1_avg_lat')
+OUT_DIR = join(PROJ_DIR, 'out', '2-11_avg')
 
 par = {
     'out_dir': OUT_DIR,
@@ -11,8 +11,8 @@ par = {
     'model': 'CAE_avg',
     'n_pcs': 2500,
     'h1_dim': 256,
-    'h2_dim': 32,
-    'z_dim': 8,
+    'h2_dim': 64,
+    'z_dim': 16,
 #     'pct_train': 0.8,
     'n_epochs': 200,
     'batch' : 128,
