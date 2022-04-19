@@ -74,5 +74,8 @@ def train(config):
 
     # Save model
     torch.save(model.state_dict(), files['model'])
+    _, _, Mu_mod1, _, Mu_mod2, _, _, _ = model(X, Y)
+    np.save(files['mod1_z'], Mu_mod1.cpu().detach().numpy())
+    np.save(files['mod2_z'], Mu_mod2.cpu().detach().numpy())
 
 

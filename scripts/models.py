@@ -54,30 +54,23 @@ class Decoder(nn.Module):
 
     def forward(self, x):
         return self.decoder(x)
-
-# class Encoder(nn.Module):
-#     def __init__(self, in_dim, h1_dim, h2_dim, z_dim):
-#         super(Encoder, self).__init__()
-#         self.encoder = nn.Sequential(
-#             Layer(in_dim, h1_dim),
-#             Layer(h1_dim, h2_dim))
-#         self.mu = nn.Linear(h2_dim, z_dim)
-#         self.logvar = nn.Linear(h2_dim, z_dim)
-
-#     def forward(self, x):
-#         x = self.encoder(x)
-#         return self.mu(x), self.logvar(x)
-
-# class Decoder(nn.Module):
-#     def __init__(self, z_dim, h2_dim, h1_dim, out_dim):
-#         super(Decoder, self).__init__()
-#         self.decoder = nn.Sequential(
-#             Layer(z_dim, h2_dim),
-#             Layer(h2_dim, h1_dim),
-#             nn.Linear(h1_dim,out_dim))
-
-#     def forward(self, x):
-#         return self.decoder(x)
+    
+class VAE(nn.Module):
+    def __init__(self, in_dim, h1_dim, h2_dim, z_dim, **args):
+        super(VAE, self).__init__()
+        self.enc = Encoder(in_dim, h1_dim, h2_dim, z_dim)
+        self.dec = Decoder(z_dim, h2_dim, h1_dim, in_dim)
+        
+    def reparam(self, mu, logvar):
+        std = torch.exp(0.5 * logvar)
+        eps = torch.randn_like(std)
+        return eps.mul(std).add_(mu)
+    
+    def forward(self, x):
+        mu, logvar = self.enc(x)
+        z = self.reparam(mu, logvar)
+        recon = self.dec(z)
+        return recon, mu, logvar, z
     
 class CAE(nn.Module):
     def __init__(self, in_dim, h1_dim, h2_dim, z_dim, **args):

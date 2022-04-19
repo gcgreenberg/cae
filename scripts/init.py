@@ -19,6 +19,7 @@ def init(config):
     files = config.files
 
     # Init output dir
+    assert not os.path.exists(par['out_dir'])
     os.makedirs(par['out_dir'], exist_ok=True)
     shutil.copyfile(files['config'], files['config_cp'])
     shutil.copyfile(files['eval_nb'], files['eval_cp'])
