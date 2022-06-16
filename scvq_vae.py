@@ -1,3 +1,4 @@
+#Copyright: Tianyu Liu (tianyul4@illinois.edu)
 import loompy
 from numba import jit
 from collections import Counter
